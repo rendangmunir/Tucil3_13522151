@@ -1,47 +1,39 @@
+package src;
 import java.util.ArrayList;
-// import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-// import java.util.PriorityQueue;
 import java.util.Set;
 
 
 
 public class GreedyBestFirst {
   public static List<String> findShortestPath(String start, String goal, Set<String> wordSet) {
-    if(start.length()!=goal.length()){
+    if(start.length()!=goal.length() || !wordSet.contains(start) || !wordSet.contains(goal)){
+      System.out.println("Node visited\t: 0");
       return null;
     }
-    // PriorityQueue<WordNode> frontier = new PriorityQueue<>(Comparator.comparingInt(node -> node.cost));
-    Map<String, String> cameFrom = new HashMap<>();
     List<String> visited = new ArrayList<>();
-    // Map<String, Integer> costSoFar = new HashMap<>();
-    Map<String, Integer> costToGoal = new HashMap<>();
-    // List<String> res = new ArrayList<>();
-    
-    cameFrom.put(start, null);
-    costToGoal.put(start, 0);
     visited.add(start);
     String next = new String();
+    int nodeCount=0;
     next = getNeighbors(start, goal, visited, wordSet);
     if(next.isBlank() || visited.contains(next)){
+      System.out.println("Node visited\t: "+ nodeCount);
       return null;
     }
     visited.add(next);
+    nodeCount++;
     
     while (!next.equals(goal)) {
       getNeighbors(next, goal, visited, wordSet);
       next = getNeighbors(next, goal, visited, wordSet);
       if(visited.contains(next)){
+        System.out.println("Node visited: \t" + nodeCount);
         return null;
       }
       visited.add(next);
-      
-      // for (String next : getNeighbors(current.word, wordSet)){
-        
-      // }
+      nodeCount++;
     }
+    System.out.println("Node visited\t: " + nodeCount);
     return visited;
 
   }
@@ -53,18 +45,12 @@ public class GreedyBestFirst {
     char[] chars = word.toCharArray();
     for (int i = 0; i < chars.length; i++) {
         char originalChar = chars[i];
-        for (char c = 'a'; c <= 'z'; c++) {
+        for (char c = 'z'; c >= 'a'; c--) {
             if (c != originalChar) {
                 chars[i] = c;
                 String neighbor = new String(chars);
-                // System.out.println(neighbor);
-                // System.out.println(getDiff(neighbor, goal));
-                // System.out.println(wordSet.contains(neighbor));
-                // System.out.println(!visited.contains(neighbor));
 
                 if (wordSet.contains(neighbor) && !visited.contains(neighbor) && getDiff(neighbor, goal)<= diff) {
-                  
-                  System.out.println(neighbor);
                     next = neighbor;
                     diff = getDiff(neighbor, goal);
                 }
@@ -72,7 +58,6 @@ public class GreedyBestFirst {
         }
         chars[i] = originalChar;
     }
-    System.out.println(visited);
     return next;
   }
 

@@ -1,6 +1,6 @@
+package src;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 public class Main {
@@ -11,7 +11,7 @@ public class Main {
     String startWord = scanner.nextLine();
     System.out.print("End Word: ");
     String endWord = scanner.nextLine();
-    Set<String> wordSet = WordSet.readWordSetFromFile("data/dictionary.txt", startWord.length());
+    Set<String> wordSet = WordSet.readWordSetFromFile("../data/dictionary.txt", startWord.length());
     if(startWord.length()!=endWord.length()){
 
     }
@@ -21,18 +21,21 @@ public class Main {
     System.out.println("3. A*");
     System.out.print("Pilihan(1/2/3): ");
     int Pilihan = scanner.nextInt();
-    Map<String, List<String>> graph = WordSet.constructWordGraph(wordSet);
+    long startTime = System.currentTimeMillis();
     List<String> shortestPath = new ArrayList<>();
     if(Pilihan==1){
-      shortestPath = UniformCostSearch.findShortestPath(startWord, endWord, graph);
+      shortestPath = UniformCostSearch.findShortestPath(startWord, endWord, wordSet);
     }else if (Pilihan==2) {
-      System.out.println("GBFS");
       shortestPath = GreedyBestFirst.findShortestPath(startWord, endWord, wordSet);
     }else{
-      shortestPath = A_Star.findShortestPath(startWord, endWord, graph);
+      shortestPath = A_Star.findShortestPath(startWord, endWord, wordSet);
     }
+    long endTime = System.currentTimeMillis();
+    long duration = endTime-startTime;
+    System.out.println("Processing time\t: " + duration + " miliseconds");
 
     if (shortestPath != null) {
+        System.out.println("Path length\t: " + shortestPath.size());
         System.out.println("Shortest Path from " + startWord + " to " + endWord + ": " + shortestPath);
     } else {
         System.out.println("No path found from " + startWord + " to " + endWord);

@@ -1,13 +1,16 @@
+package src;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 public class A_Star {
-  public static List<String> findShortestPath(String start, String goal, Map<String, List<String>> wordSet) {
-    if(start.length()!=goal.length() ||   wordSet.get(start)==null || wordSet.get(goal)==null){
+  public static List<String> findShortestPath(String start, String goal, Set<String> wordSet) {
+    if(start.length()!=goal.length() || !wordSet.contains(start) || !wordSet.contains(goal)){
+      System.out.println("Node visited\t: 0");
       return null;
     }
     PriorityQueue<WordNode> frontier = new PriorityQueue<>(Comparator.comparingInt(node -> node.cost));
@@ -22,11 +25,11 @@ public class A_Star {
         WordNode current = frontier.poll();
 
         if (current.word.equals(goal)) {
-            System.out.println("Node visited: " + nodeCount);
+            System.out.println("Node visited\t: " + nodeCount);
             return reconstructPath(cameFrom, current.word);
         }
 
-        for (String next : wordSet.get(current.word)) {
+        for (String next : getNeighbors(current.word, wordSet)) {
             int newCost = costSoFar.get(current.word) + 1 + getDiff(current.word, goal);
             if (!costSoFar.containsKey(next) || newCost < costSoFar.get(next)) {
               costSoFar.put(next, newCost);
@@ -49,12 +52,29 @@ public class A_Star {
         return path;
     }
 
+    private static List<String> getNeighbors(String word, Set<String> wordSet) {
+        List<String> neighbors = new ArrayList<>();
+        char[] chars = word.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char originalChar = chars[i];
+            for (char c = 'z'; c >= 'a'; c--) {
+                if (c != originalChar) {
+                    chars[i] = c;
+                    String neighbor = new String(chars);
+                    if (wordSet.contains(neighbor)) {
+                        neighbors.add(neighbor);
+                    }
+                }
+            }
+            chars[i] = originalChar;
+        }
+        return neighbors;
+    }
+
     private static int getDiff(String word, String goal){
-      char[] startWord = word.toCharArray();
-      char[] goalWord = goal.toCharArray();
       int diff = 0;
-      for(int i=0; i<startWord.length; i++){
-        if(startWord[i]!=goalWord[i]){
+      for(int i=0; i<word.length(); i++){
+        if(word.charAt(i) != goal.charAt(i)){
           diff++;
         }
       }
