@@ -1,2 +1,2 @@
-table
-apple
+car
+bot
